@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulir Umpan Balik Sosialisasi Database</title>
-    <!-- Muat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -12,373 +11,178 @@
             font-family: 'Inter', sans-serif;
         }
         .rating-label {
-            width: 3rem; /* Lebar tetap untuk angka rating */
+            width: 3rem;
         }
         .rating-grid {
+            display: grid;
             grid-template-columns: 1fr repeat(5, minmax(0, 1fr));
         }
-        /* Custom styles for the dynamic toast notification */
-        #status-toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            transform: translateY(100%);
-            max-width: 90%;
-            min-width: 250px;
+        .form-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        #status-toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        .form-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-start justify-center py-12 px-4 sm:px-6 lg:px-8">
+<body class="bg-gradient-to-br from-blue-50 via-white to-green-50 min-h-screen flex items-start justify-center py-12 px-4 sm:px-6 lg:px-8">
 
-    <div class="w-full max-w-3xl bg-white p-8 md:p-10 rounded-xl shadow-2xl space-y-8">
+    <div class="w-full max-w-3xl bg-white p-8 md:p-10 rounded-2xl shadow-xl form-card space-y-8 border border-gray-100">
         <header class="text-center mb-6">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-800">FORM UMPAN BALIK KEGIATAN SOSIALISASI DATABASE</h1>
-            <p class="mt-2 text-sm text-gray-500">OBA/SK/KOS</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-800 drop-shadow-sm">🗂️ Form Umpan Balik Sosialisasi Database</h1>
+            <p class="mt-2 text-sm text-gray-500 italic">OBA / SK / KOS</p>
         </header>
 
-        <p class="text-sm text-center text-gray-700 p-4 border-b border-gray-200">
-            Terima kasih atas partisipasi dan respon Anda! Umpan balik ini akan digunakan sebagai dasar pengembangan database berikutnya.
+        <p class="text-sm text-center text-gray-700 p-4 bg-blue-50 border border-blue-100 rounded-md">
+            Terima kasih atas partisipasi Anda! Masukan ini akan digunakan untuk meningkatkan kualitas database ke depan.
         </p>
 
         <!-- Formulir -->
         <form id="data-form" class="space-y-8">
 
-            <!-- Data Peserta -->
+            <!-- Informasi Peserta -->
             <section class="space-y-4">
-                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Informasi Peserta</h2>
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">🧑‍💼 Informasi Peserta</h2>
                 <div>
                     <label for="nama_peserta" class="block text-sm font-medium text-gray-700">Nama Peserta</label>
                     <input type="text" id="nama_peserta" name="nama_peserta" required
-                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm">
                 </div>
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-gray-700">Unit Kerja</label>
-                    <!-- Perubahan dari input text menjadi select dropdown -->
-                    <select id="unit_kerja" name="unit_kerja" required
-                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        <option value="" disabled selected>Pilih Unit Kerja Anda</option>
-                        <option value="Loka POM di Kabupaten Sumba Timur">Loka POM di Kabupaten Sumba Timur</option>
-                        <option value="Unit Kerja Lainnya">Unit Kerja Lainnya</option>
-                    </select>
+                    <input type="text" id="unit_kerja" name="unit_kerja" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm">
                 </div>
             </section>
 
-            <!-- Bagian A. Penilaian Kegiatan -->
+            <!-- Bagian A -->
             <section class="space-y-4">
-                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Bagian A. Penilaian Kegiatan</h2>
-                <p class="text-sm text-gray-600">Beri penilaian Anda (1 = Tidak Setuju, 5 = Sangat Setuju):</p>
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">📊 Bagian A. Penilaian Kegiatan</h2>
+                <p class="text-sm text-gray-600 mb-2">Beri penilaian Anda (1 = Tidak Setuju, 5 = Sangat Setuju):</p>
 
-                <div class="overflow-x-auto">
-                    <div class="grid rating-grid gap-y-2 min-w-[500px]">
-                        <!-- Header Rating -->
-                        <div class="font-medium text-gray-700 col-span-1">Aspek</div>
+                <div class="overflow-x-auto bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="rating-grid gap-y-3 min-w-[600px]">
+                        <div class="font-medium text-gray-700">Aspek</div>
                         <div class="text-center font-medium text-gray-700 rating-label">1</div>
                         <div class="text-center font-medium text-gray-700 rating-label">2</div>
                         <div class="text-center font-medium text-gray-700 rating-label">3</div>
                         <div class="text-center font-medium text-gray-700 rating-label">4</div>
                         <div class="text-center font-medium text-gray-700 rating-label">5</div>
 
-                        <!-- Aspek 1 -->
-                        <div class="text-sm text-gray-800">1. Materi sosialisasi mudah dipahami</div>
-                        <input type="radio" name="aspek_1" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_1" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_1" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_1" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_1" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-
-                        <!-- Aspek 2 -->
-                        <div class="text-sm text-gray-800">2. Praktik penggunaan database dijelaskan secara jelas</div>
-                        <input type="radio" name="aspek_2" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_2" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_2" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_2" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_2" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-
-                        <!-- Aspek 3 -->
-                        <div class="text-sm text-gray-800">3. Fitur database sesuai kebutuhan pengawasan di unit kerja</div>
-                        <input type="radio" name="aspek_3" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_3" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_3" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_3" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_3" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-
-                        <!-- Aspek 4 -->
-                        <div class="text-sm text-gray-800">4. Form/kolom dalam database mudah diisi dan tidak membingungkan</div>
-                        <input type="radio" name="aspek_4" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_4" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_4" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_4" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_4" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-
-                        <!-- Aspek 5 -->
-                        <div class="text-sm text-gray-800">5. Penggunaan filter & scoring risiko dalam database bermanfaat untuk prioritas pengawasan</div>
-                        <input type="radio" name="aspek_5" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_5" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_5" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_5" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_5" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-
-                        <!-- Aspek 6 -->
-                        <div class="text-sm text-gray-800">6. Waktu pelaksanaan sosialisasi cukup untuk memahami materi</div>
-                        <input type="radio" name="aspek_6" value="1" required class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_6" value="2" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_6" value="3" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_6" value="4" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
-                        <input type="radio" name="aspek_6" value="5" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500">
+                        <!-- Contoh aspek -->
+                        <template id="aspek-template">
+                            <div class="text-sm text-gray-800"></div>
+                            <input type="radio" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                            <input type="radio" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                            <input type="radio" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                            <input type="radio" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                            <input type="radio" class="justify-self-center self-center h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                        </template>
                     </div>
                 </div>
             </section>
 
-            <!-- Bagian B. Persepsi dan Pengalaman -->
+            <!-- Bagian B -->
             <section class="space-y-4">
-                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Bagian B. Persepsi dan Pengalaman</h2>
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">💬 Bagian B. Persepsi dan Pengalaman</h2>
 
-                <!-- Kepercayaan Diri -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Setelah mengikuti sosialisasi, seberapa percaya diri Anda dalam menggunakan database ini?</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Seberapa percaya diri Anda dalam menggunakan database ini?</label>
                     <div class="flex flex-wrap gap-x-4 gap-y-2">
-                        <div class="flex items-center">
-                            <input id="pd_1" name="percaya_diri" type="radio" value="1-Tidak Percaya Diri" required class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                            <label for="pd_1" class="ml-2 text-sm text-gray-700">Tidak Percaya Diri</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="pd_2" name="percaya_diri" type="radio" value="2-Kurang Percaya Diri" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                            <label for="pd_2" class="ml-2 text-sm text-gray-700">Kurang Percaya Diri</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="pd_3" name="percaya_diri" type="radio" value="3-Cukup Percaya Diri" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                            <label for="pd_3" class="ml-2 text-sm text-gray-700">Cukup Percaya Diri</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="pd_4" name="percaya_diri" type="radio" value="4-Percaya Diri" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                            <label for="pd_4" class="ml-2 text-sm text-gray-700">Percaya Diri</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="pd_5" name="percaya_diri" type="radio" value="5-Sangat Percaya Diri" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                            <label for="pd_5" class="ml-2 text-sm text-gray-700">Sangat Percaya Diri</label>
-                        </div>
+                        <label class="flex items-center space-x-2"><input type="radio" name="percaya_diri" value="1" required class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Tidak Percaya Diri</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" name="percaya_diri" value="2" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Kurang Percaya Diri</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" name="percaya_diri" value="3" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Cukup</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" name="percaya_diri" value="4" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Percaya Diri</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" name="percaya_diri" value="5" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Sangat Percaya Diri</span></label>
                     </div>
                 </div>
 
-                <!-- Manfaat Utama -->
                 <div>
-                    <label for="manfaat_utama" class="block text-sm font-medium text-gray-700">Apa manfaat utama yang Anda rasakan dari penggunaan database ini dalam mendukung tugas Anda?</label>
+                    <label for="manfaat_utama" class="block text-sm font-medium text-gray-700">Apa manfaat utama yang Anda rasakan?</label>
                     <textarea id="manfaat_utama" name="manfaat_utama" rows="3" required
-                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
 
-                <!-- Perbaikan / Fitur Kurang Jelas -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Apakah ada fitur, kolom, atau bagian pada database yang menurut Anda kurang jelas atau perlu perbaikan?</label>
-                    <div class="mt-2 space-y-2">
-                        <div class="flex items-center">
-                            <input id="perbaikan_tidak" name="perbaikan_status" type="radio" value="Tidak Ada" required
-                                   class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300" onchange="togglePerbaikanDetail()">
-                            <label for="perbaikan_tidak" class="ml-2 text-sm text-gray-700">Tidak Ada</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="perbaikan_ada" name="perbaikan_status" type="radio" value="Ada"
-                                   class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300" onchange="togglePerbaikanDetail()">
-                            <label for="perbaikan_ada" class="ml-2 text-sm text-gray-700">Ada</label>
-                        </div>
+                    <label class="block text-sm font-medium text-gray-700">Apakah ada bagian yang perlu perbaikan?</label>
+                    <div class="mt-2 flex items-center gap-4">
+                        <label class="flex items-center space-x-2"><input id="perbaikan_tidak" name="perbaikan_status" type="radio" value="Tidak Ada" required onchange="togglePerbaikanDetail()" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Tidak Ada</span></label>
+                        <label class="flex items-center space-x-2"><input id="perbaikan_ada" name="perbaikan_status" type="radio" value="Ada" onchange="togglePerbaikanDetail()" class="text-blue-600 focus:ring-blue-500"><span class="text-sm">Ada</span></label>
                     </div>
                 </div>
-                
-                <div id="perbaikan_detail_group" class="pl-4 hidden transition-all duration-300 ease-in-out">
-                    <label for="perbaikan_detail" class="block text-sm font-medium text-gray-700">Ada, yaitu:</label>
+
+                <div id="perbaikan_detail_group" class="pl-4 hidden">
+                    <label for="perbaikan_detail" class="block text-sm font-medium text-gray-700 mt-2">Ada, yaitu:</label>
                     <textarea id="perbaikan_detail" name="perbaikan_detail" rows="2"
-                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                    <p id="perbaikan-error" class="text-xs text-red-600 mt-1 hidden">Mohon jelaskan detail perbaikan yang Anda maksud.</p>
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
             </section>
-
 
             <div>
                 <button type="submit" id="submit-button"
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-full flex justify-center py-3 px-4 rounded-md shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-400 transition-all duration-300 disabled:opacity-50">
                     Kirim Umpan Balik
                 </button>
             </div>
         </form>
 
-        <!-- Indikator Loading (tersembunyi) -->
-        <div id="loading-indicator" class="hidden mt-4 flex items-center justify-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-gray-600">Mengirim umpan balik...</span>
+        <div id="loading-indicator" class="hidden mt-4 flex items-center justify-center space-x-2 text-green-700">
+            <svg class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+            <span>Mengirim umpan balik...</span>
         </div>
-    </div>
 
-    <!-- TOAST NOTIFICATION (Fixed Position) -->
-    <div id="status-toast" class="p-4 rounded-lg shadow-xl text-white flex items-center space-x-3">
-        <svg id="toast-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <!-- Icon placeholder -->
-        </svg>
-        <span id="toast-message" class="font-medium"></span>
+        <div id="status-message" class="mt-6 text-center"></div>
     </div>
-
 
     <script>
-        // !!! PENTING: Ganti dengan URL Web App Anda dari Google Apps Script !!!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsQabFfuUYA-BfwCVzNyVv1PEN7EXfU4akZGZKcCO1H5IoMRd3jYf-EcAfQ_3auoO9/exec';
-
+        const SCRIPT_URL = 'GANTI_DENGAN_URL_APPS_SCRIPT_ANDA';
         const form = document.getElementById('data-form');
         const submitButton = document.getElementById('submit-button');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const statusMessage = document.getElementById('status-message');
         const perbaikanDetailGroup = document.getElementById('perbaikan_detail_group');
         const perbaikanDetailInput = document.getElementById('perbaikan_detail');
-        const perbaikanErrorMessage = document.getElementById('perbaikan-error');
-        const statusToast = document.getElementById('status-toast');
-        const toastMessage = document.getElementById('toast-message');
-        const toastIcon = document.getElementById('toast-icon');
 
-        // Fungsi untuk menampilkan pesan Toast
-        function showToast(message, type = 'success') {
-            // Hapus kelas warna sebelumnya
-            statusToast.className = 'p-4 rounded-lg shadow-xl text-white flex items-center space-x-3';
-            statusToast.classList.add('show');
-            
-            let bgColor;
-            let iconPath;
-
-            if (type === 'success') {
-                bgColor = 'bg-green-500';
-                // Checkmark icon (SVG)
-                iconPath = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-            } else { // error
-                bgColor = 'bg-red-500';
-                // X icon (SVG)
-                iconPath = '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-            }
-
-            statusToast.classList.add(bgColor);
-            toastMessage.textContent = message;
-            toastIcon.innerHTML = iconPath;
-
-            // Sembunyikan setelah 5 detik
-            setTimeout(() => {
-                statusToast.classList.remove('show');
-            }, 5000);
-        }
-
-        // Fungsi untuk menampilkan/menyembunyikan detail perbaikan
         function togglePerbaikanDetail() {
-            const isAdaSelected = document.getElementById('perbaikan_ada').checked;
-            if (isAdaSelected) {
-                // Gunakan class untuk menampilkan, ditambah transisi di CSS
-                perbaikanDetailGroup.classList.remove('hidden'); 
-                perbaikanDetailInput.required = true;
-            } else {
-                perbaikanDetailGroup.classList.add('hidden');
-                perbaikanDetailInput.required = false;
-                perbaikanDetailInput.value = ''; // Kosongkan jika Tidak Ada dipilih
-                perbaikanErrorMessage.classList.add('hidden'); // Sembunyikan pesan error jika ada
-            }
+            const isAda = document.getElementById('perbaikan_ada').checked;
+            perbaikanDetailGroup.classList.toggle('hidden', !isAda);
+            perbaikanDetailInput.required = isAda;
+            if (!isAda) perbaikanDetailInput.value = '';
         }
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-
-            // Sembunyikan pesan error inline
-            perbaikanErrorMessage.classList.add('hidden');
-
-            // Validasi kustom: Jika 'Ada' dipilih, pastikan detailnya terisi
-            if (document.getElementById('perbaikan_ada').checked && perbaikanDetailInput.value.trim() === '') {
-                perbaikanDetailInput.focus();
-                perbaikanDetailInput.classList.add('border-red-500'); // Beri highlight merah
-                perbaikanErrorMessage.classList.remove('hidden'); // Tampilkan pesan error
-                showToast('Mohon lengkapi detail perbaikan!', 'error');
-                return;
-            }
-            
-            // Hapus highlight merah jika validasi lolos
-            perbaikanDetailInput.classList.remove('border-red-500');
-
-            // Validasi kustom untuk dropdown: memastikan Unit Kerja sudah dipilih
-            if (document.getElementById('unit_kerja').value === '') {
-                document.getElementById('unit_kerja').focus();
-                showToast('Mohon pilih Unit Kerja Anda!', 'error');
-                return;
-            }
-
-            // Tampilkan loading dan nonaktifkan tombol
+        form.addEventListener('submit', e => {
+            e.preventDefault();
             loadingIndicator.classList.remove('hidden');
             submitButton.disabled = true;
+            submitButton.textContent = 'Mengirim...';
 
-            // Buat objek FormData
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
+            const data = Object.fromEntries(new FormData(form).entries());
 
-            // Kirim data ke Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data),
-                redirect: 'follow', 
             })
-            .then(response => {
-                // Karena CORS, kita mungkin mendapatkan response.type 'opaque', 
-                // tapi kita akan mengasumsikan sukses jika fetch berhasil tanpa error jaringan/izin.
-                // Jika ingin lebih detail, bisa parsing JSON dari Apps Script (tapi ini lebih rentan CORS error).
-                
-                // Coba parsing JSON dari Apps Script (jika ada)
-                return response.json().then(result => {
-                    if (result.result === 'success') {
-                        handleSuccess();
-                    } else {
-                        throw new Error(result.message || 'Server error.');
-                    }
-                }).catch(() => {
-                    // Jika gagal parsing (misalnya, response opaque/text), 
-                    // dan status OK, asumsikan sukses (metode yang lebih aman untuk CORS Google Script)
-                    if (response.ok || response.status === 200 || response.type === 'opaque') {
-                       handleSuccess();
-                    } else {
-                       throw new Error('Gagal mengirim data. Cek koneksi Anda.');
-                    }
-                });
+            .then(res => {
+                if (!res.ok) throw new Error('Gagal mengirim');
+                form.reset();
+                togglePerbaikanDetail();
+                statusMessage.textContent = '✅ Umpan balik berhasil dikirim. Terima kasih!';
+                statusMessage.className = 'mt-6 text-green-600 font-medium text-center';
             })
-            .catch(error => handleError(error));
+            .catch(() => {
+                statusMessage.textContent = '❌ Terjadi kesalahan. Silakan coba lagi.';
+                statusMessage.className = 'mt-6 text-red-600 font-medium text-center';
+            })
+            .finally(() => {
+                loadingIndicator.classList.add('hidden');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim Umpan Balik';
+            });
         });
 
-        function handleSuccess() {
-            console.log('Sukses terkirim!');
-            form.reset(); 
-            togglePerbaikanDetail(); // Reset state detail perbaikan
-            showToast('Umpan balik berhasil terkirim! Terima kasih.', 'success');
-            resetUI();
-        }
-
-        function handleError(error) {
-            console.error('Error!', error.message);
-            showToast(`Terjadi kesalahan: ${error.message}`, 'error');
-            resetUI();
-        }
-
-        function resetUI() {
-            loadingIndicator.classList.add('hidden');
-            submitButton.disabled = false;
-        }
-
-        // Jalankan saat load untuk memastikan detail perbaikan tersembunyi
         document.addEventListener('DOMContentLoaded', togglePerbaikanDetail);
     </script>
-
 </body>
 </html>
