@@ -17,6 +17,22 @@
         .rating-grid {
             grid-template-columns: 1fr repeat(5, minmax(0, 1fr));
         }
+        /* Custom styles for the dynamic toast notification */
+        #status-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(100%);
+            max-width: 90%;
+            min-width: 250px;
+        }
+        #status-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-start justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -170,10 +186,11 @@
                     </div>
                 </div>
                 
-                <div id="perbaikan_detail_group" class="pl-4 hidden">
+                <div id="perbaikan_detail_group" class="pl-4 hidden transition-all duration-300 ease-in-out">
                     <label for="perbaikan_detail" class="block text-sm font-medium text-gray-700">Ada, yaitu:</label>
                     <textarea id="perbaikan_detail" name="perbaikan_detail" rows="2"
                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    <p id="perbaikan-error" class="text-xs text-red-600 mt-1 hidden">Mohon jelaskan detail perbaikan yang Anda maksud.</p>
                 </div>
             </section>
 
@@ -194,10 +211,16 @@
             </svg>
             <span class="text-gray-600">Mengirim umpan balik...</span>
         </div>
-
-        <!-- Pesan Status -->
-        <div id="status-message" class="mt-6 text-center"></div>
     </div>
+
+    <!-- TOAST NOTIFICATION (Fixed Position) -->
+    <div id="status-toast" class="p-4 rounded-lg shadow-xl text-white flex items-center space-x-3">
+        <svg id="toast-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <!-- Icon placeholder -->
+        </svg>
+        <span id="toast-message" class="font-medium"></span>
+    </div>
+
 
     <script>
         // !!! PENTING: Ganti dengan URL Web App Anda dari Google Apps Script !!!
@@ -206,37 +229,78 @@
         const form = document.getElementById('data-form');
         const submitButton = document.getElementById('submit-button');
         const loadingIndicator = document.getElementById('loading-indicator');
-        const statusMessage = document.getElementById('status-message');
         const perbaikanDetailGroup = document.getElementById('perbaikan_detail_group');
         const perbaikanDetailInput = document.getElementById('perbaikan_detail');
+        const perbaikanErrorMessage = document.getElementById('perbaikan-error');
+        const statusToast = document.getElementById('status-toast');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
 
+        // Fungsi untuk menampilkan pesan Toast
+        function showToast(message, type = 'success') {
+            // Hapus kelas warna sebelumnya
+            statusToast.className = 'p-4 rounded-lg shadow-xl text-white flex items-center space-x-3';
+            statusToast.classList.add('show');
+            
+            let bgColor;
+            let iconPath;
+
+            if (type === 'success') {
+                bgColor = 'bg-green-500';
+                // Checkmark icon (SVG)
+                iconPath = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+            } else { // error
+                bgColor = 'bg-red-500';
+                // X icon (SVG)
+                iconPath = '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+            }
+
+            statusToast.classList.add(bgColor);
+            toastMessage.textContent = message;
+            toastIcon.innerHTML = iconPath;
+
+            // Sembunyikan setelah 5 detik
+            setTimeout(() => {
+                statusToast.classList.remove('show');
+            }, 5000);
+        }
+
+        // Fungsi untuk menampilkan/menyembunyikan detail perbaikan
         function togglePerbaikanDetail() {
             const isAdaSelected = document.getElementById('perbaikan_ada').checked;
             if (isAdaSelected) {
-                perbaikanDetailGroup.classList.remove('hidden');
+                // Gunakan class untuk menampilkan, ditambah transisi di CSS
+                perbaikanDetailGroup.classList.remove('hidden'); 
                 perbaikanDetailInput.required = true;
             } else {
                 perbaikanDetailGroup.classList.add('hidden');
                 perbaikanDetailInput.required = false;
                 perbaikanDetailInput.value = ''; // Kosongkan jika Tidak Ada dipilih
+                perbaikanErrorMessage.classList.add('hidden'); // Sembunyikan pesan error jika ada
             }
         }
 
         form.addEventListener('submit', (e) => {
             e.preventDefault(); 
 
-            // Validasi kustom untuk perbaikan_detail jika 'Ada' dipilih
+            // Sembunyikan pesan error inline
+            perbaikanErrorMessage.classList.add('hidden');
+
+            // Validasi kustom: Jika 'Ada' dipilih, pastikan detailnya terisi
             if (document.getElementById('perbaikan_ada').checked && perbaikanDetailInput.value.trim() === '') {
                 perbaikanDetailInput.focus();
-                alert('Anda memilih "Ada", mohon isi detail perbaikan.');
+                perbaikanDetailInput.classList.add('border-red-500'); // Beri highlight merah
+                perbaikanErrorMessage.classList.remove('hidden'); // Tampilkan pesan error
+                showToast('Mohon lengkapi detail perbaikan!', 'error');
                 return;
             }
-
+            
+            // Hapus highlight merah jika validasi lolos
+            perbaikanDetailInput.classList.remove('border-red-500');
 
             // Tampilkan loading dan nonaktifkan tombol
             loadingIndicator.classList.remove('hidden');
             submitButton.disabled = true;
-            statusMessage.textContent = '';
 
             // Buat objek FormData
             const formData = new FormData(form);
@@ -257,11 +321,26 @@
                 redirect: 'follow', 
             })
             .then(response => {
-                if (response.type === 'opaque' || response.ok || response.status === 200) {
-                    handleSuccess();
-                } else {
-                    return response.text().then(text => { throw new Error('Gagal mengirim: ' + text); });
-                }
+                // Karena CORS, kita mungkin mendapatkan response.type 'opaque', 
+                // tapi kita akan mengasumsikan sukses jika fetch berhasil tanpa error jaringan/izin.
+                // Jika ingin lebih detail, bisa parsing JSON dari Apps Script (tapi ini lebih rentan CORS error).
+                
+                // Coba parsing JSON dari Apps Script (jika ada)
+                return response.json().then(result => {
+                    if (result.result === 'success') {
+                        handleSuccess();
+                    } else {
+                        throw new Error(result.message || 'Server error.');
+                    }
+                }).catch(() => {
+                    // Jika gagal parsing (misalnya, response opaque/text), 
+                    // dan status OK, asumsikan sukses (metode yang lebih aman untuk CORS Google Script)
+                    if (response.ok || response.status === 200 || response.type === 'opaque') {
+                       handleSuccess();
+                    } else {
+                       throw new Error('Gagal mengirim data. Cek koneksi Anda.');
+                    }
+                });
             })
             .catch(error => handleError(error));
         });
@@ -270,15 +349,13 @@
             console.log('Sukses terkirim!');
             form.reset(); 
             togglePerbaikanDetail(); // Reset state detail perbaikan
-            statusMessage.textContent = 'Umpan balik berhasil terkirim! Terima kasih.';
-            statusMessage.className = 'mt-6 text-center text-green-600 font-medium';
+            showToast('Umpan balik berhasil terkirim! Terima kasih.', 'success');
             resetUI();
         }
 
         function handleError(error) {
             console.error('Error!', error.message);
-            statusMessage.textContent = 'Terjadi kesalahan saat mengirim. Coba lagi nanti.';
-            statusMessage.className = 'mt-6 text-center text-red-600 font-medium';
+            showToast(`Terjadi kesalahan: ${error.message}`, 'error');
             resetUI();
         }
 
@@ -292,5 +369,4 @@
     </script>
 
 </body>
-
 </html>
